@@ -18,6 +18,7 @@ public class MachineImpl implements Machine {
     public void setCode(Code code){
 
     }
+
     @Override
     public char processChar(char input) {
         int intermediate = keyboard.processChar(input);

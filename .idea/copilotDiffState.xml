@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/tests/Rotor.test.ts">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/tests/Rotor.test.ts" />
+              <option name="updatedContent" value="// ...existing code...&#10;/*&#10;  Focused unit tests for the Rotor.&#10;  Adjust the import path below to match your project (example: ../src/Rotor or ../Rotor).&#10;*/&#10;import Rotor from '../src/Rotor'; // &lt;-- adjust path if needed&#10;&#10;describe('Rotor (focused)', () =&gt; {&#10;  test('encodes then decodes a single letter when position/reset are symmetric', () =&gt; {&#10;    // Create rotor instance -- adapt constructor args to your Rotor API&#10;    const rotor = new Rotor(/* ...wiring..., notch?, initialPosition? */);&#10;    const input = 'A';&#10;    const encoded = rotor.encodeForward(input);&#10;    const decoded = rotor.encodeBackward(encoded);&#10;    expect(decoded).toBe(input);&#10;  });&#10;&#10;  test('advances position on step and affects mapping', () =&gt; {&#10;    const rotor = new Rotor(/* ... */);&#10;    const before = rotor.encodeForward('A');&#10;    rotor.step(); // advance one position&#10;    const after = rotor.encodeForward('A');&#10;    expect(after).not.toBe(before);&#10;  });&#10;});&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
