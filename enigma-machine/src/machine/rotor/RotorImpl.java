@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class RotorImpl implements Rotor {
 
-    private int position = 0;
+    private int position;
     private final int size;
     private final int id;
     private final int notchIndex;
@@ -19,9 +19,14 @@ public class RotorImpl implements Rotor {
     public RotorImpl(String alphabet,
                      String rightSequence,
                      String leftSequence,
+                     int position,
                      int notchPositionBase1,
                      int id) {
+
         this.id = id;
+
+        //TODO validation for position
+        this.position = position;
 
         if (alphabet == null || rightSequence == null || leftSequence == null) {
             throw new IllegalArgumentException("Alphabet, rightSequence and leftSequence must not be null");

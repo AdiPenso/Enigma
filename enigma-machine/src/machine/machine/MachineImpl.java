@@ -2,7 +2,8 @@ package machine.machine;
 
 import machine.code.Code;
 import machine.keyboard.Keyboard;
-import machine.rotor.RotorPosition;
+import machine.rotor.Rotor;
+//import machine.rotor.RotorPosition;
 
 import java.util.List;
 
@@ -16,46 +17,46 @@ public class MachineImpl implements Machine {
 
     @Override
     public void setCode(Code code){
-
+        this.code = code;
     }
 
     @Override
     public char processChar(char input) {
         int intermediate = keyboard.processChar(input);
-        List<RotorPosition> rotorsPositions = code.getRotorsPositions();
+        List<Rotor> rotors = code.getRotors();
 
-        advance(rotorsPositions);
+        advance(rotors);
 
-        intermediate = forward(rotorsPositions, intermediate);
+        intermediate = forward(rotors, intermediate);
 
         intermediate = code.getReflector().reflect(intermediate);
 
-        intermediate = backward(rotorsPositions, intermediate);
+        intermediate = backward(rotors, intermediate);
 
         return keyboard.lightALamp(intermediate);
     }
 
-    private int backward(List<RotorPosition> rotorsPositions, int intermediate) {
-        for (int i = rotorsPositions.size() - 1; i >= 0; i--) {
-            intermediate = rotorsPositions.get(i).rotor.encodeBackward(intermediate);
+    private int backward(List<Rotor> rotors, int intermediate) {
+        for (int i = rotors.size() - 1; i >= 0; i--) {
+            intermediate = rotors.get(i).encodeBackward(intermediate);
         }
         return intermediate;
     }
 
-    private int forward(List<RotorPosition> rotorsPositions, int intermediate) {
-        for (int i = 0; i < rotorsPositions.size(); i++) {
-            intermediate = rotorsPositions.get(i).rotor.encodeForward(intermediate);
+    private int forward(List<Rotor> rotors, int intermediate) {
+        for (int i = 0; i < rotors.size(); i++) {
+            intermediate = rotors.get(i).encodeForward(intermediate);
         }
         return intermediate;
     }
 
-    private void advance(List<RotorPosition> rotorsPositions) {
+    private void advance(List<Rotor> rotors) {
         int rotorIndex = 0;
         boolean shouldAdvance = false;
 
         do {
-            shouldAdvance = rotorsPositions.get(rotorIndex).rotor.advance();
+            shouldAdvance = rotors.get(rotorIndex).advance();
             rotorIndex++;
-        }while(shouldAdvance && rotorIndex < rotorsPositions.size());
+        }while(shouldAdvance && rotorIndex < rotors.size());
     }
 }
