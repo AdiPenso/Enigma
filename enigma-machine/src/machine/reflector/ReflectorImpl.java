@@ -1,11 +1,13 @@
 package machine.reflector;
 
 public class ReflectorImpl implements Reflector {
-
+//TODO validation tests
     private final int[] mapping;
+    int id;
 
-    public ReflectorImpl(int[] mapping) {
+    public ReflectorImpl(int id, int[] mapping) {
         this.mapping = mapping.clone();
+        this.id = id;
     }
 
     @Override

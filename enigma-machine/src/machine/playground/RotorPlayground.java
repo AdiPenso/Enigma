@@ -1,5 +1,6 @@
 package machine.playground;
 
+import machine.machine.MessageProcessor;
 import machine.rotor.Rotor;
 import machine.rotor.RotorImpl;
 import machine.code.Code;
@@ -72,7 +73,7 @@ public class RotorPlayground {
                 rightSeq,
                 "AFBECD",  // leftSeq3
                 2,
-                3,
+                6,
                 3
         );
             /*
@@ -98,7 +99,7 @@ public class RotorPlayground {
 
             // 5. Reflector I לפי ה-XML
             int[] reflectorMapping = buildReflectorI();
-            Reflector reflector = new ReflectorImpl(reflectorMapping);
+            Reflector reflector = new ReflectorImpl(0,reflectorMapping);
 
             // 6. Code = רשימת רוטורים + רפלקטור
             Code code = new CodeImpl(rotorsOrder, reflector);
@@ -107,12 +108,19 @@ public class RotorPlayground {
             Machine machine = new MachineImpl(keyboard);
             machine.setCode(code);
 
-            // 8. נצפין תו אחד – נגיד 'A'
-            char inputChar = 'E';
-            char outputChar = machine.processChar(inputChar);
+        MessageProcessor processor = new MessageProcessor(machine);
 
-            System.out.println("Input char  : " + inputChar);
-            System.out.println("Output char : " + outputChar);
+        String plain = "ADEBCFEEDA";
+        String cipher = processor.process(plain);
+
+        System.out.println("Plain  : " + plain);
+        System.out.println("Cipher : " + cipher);
+            // 8. נצפין תו אחד – נגיד 'A'
+//            char inputChar = 'A';
+//            char outputChar = machine.processChar(inputChar);
+//
+//            System.out.println("Input char  : " + inputChar);
+//            System.out.println("Output char : " + outputChar);
         }
 
         private static int[] buildReflectorI() {

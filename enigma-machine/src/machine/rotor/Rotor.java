@@ -6,6 +6,8 @@ public interface Rotor {
     int encodeBackward(int input);
     boolean advance();
 
+    String getPosition();
+
 //    void step();
 //    boolean atNotch();
 }

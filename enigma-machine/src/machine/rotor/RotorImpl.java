@@ -8,7 +8,7 @@ public class RotorImpl implements Rotor {
     private int position;
     private final int size;
     private final int id;
-    private final int notchIndex;
+    private int notchIndex;
     private final int[] forwardMap;
     private final int[] backwardMap;
     private final String alphabet;
@@ -62,11 +62,14 @@ public class RotorImpl implements Rotor {
         buildMappings();
     }
 
+
     @Override
     public int encodeForward(int input) {
+        System.out.println(input);
         checkIndex(input);
         int shiftedIn = (input + position) % size;
         int mapped = forwardMap[shiftedIn];
+        System.out.println((mapped - position + size) % size);
         return (mapped - position + size) % size;
     }
 
@@ -82,10 +85,17 @@ public class RotorImpl implements Rotor {
     public boolean advance() {
         int previousPosition = position;
         position = (position + 1) % size;
-
+        notchIndex = (notchIndex - 1) % size;
        //TODO potential bugs
-        return previousPosition == notchIndex;
+        //return previousPosition == notchIndex;
+        return notchIndex == 0;
     }
+
+    @Override
+    public String getPosition() {
+        return "" + this.position;
+    }
+
 
     private void buildMappings() {
         Map<Character, Integer> rightIndexByChar = new HashMap<>();
