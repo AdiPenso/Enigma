@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class RotorImpl implements Rotor {
 
-    private int position;
+    private int position = 0;
     private final int size;
     private final int id;
     private int notchIndex;
@@ -19,14 +19,14 @@ public class RotorImpl implements Rotor {
     public RotorImpl(String alphabet,
                      String rightSequence,
                      String leftSequence,
-                     int position,
+                     //int position,
                      int notchPositionBase1,
                      int id) {
 
         this.id = id;
 
         //TODO validation for position
-        this.position = position;
+        //this.position = position;
 
         if (alphabet == null || rightSequence == null || leftSequence == null) {
             throw new IllegalArgumentException("Alphabet, rightSequence and leftSequence must not be null");
@@ -65,11 +65,11 @@ public class RotorImpl implements Rotor {
 
     @Override
     public int encodeForward(int input) {
-        System.out.println(input);
+        //System.out.println(input);
         checkIndex(input);
         int shiftedIn = (input + position) % size;
         int mapped = forwardMap[shiftedIn];
-        System.out.println((mapped - position + size) % size);
+        //System.out.println((mapped - position + size) % size);
         return (mapped - position + size) % size;
     }
 

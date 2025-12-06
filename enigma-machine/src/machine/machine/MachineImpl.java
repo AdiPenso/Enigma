@@ -45,7 +45,7 @@ public class MachineImpl implements Machine {
 
     private int forward(List<Rotor> rotors, int intermediate) {
         for (int i = 0; i < rotors.size(); i++) {
-            System.out.println("Rotor " + i + " position before encoding: " + rotors.get(i).getPosition() + "intermidiate: "+ intermediate);
+           // System.out.println("Rotor " + i + " position before encoding: " + rotors.get(i).getPosition() + "intermidiate: "+ intermediate);
             intermediate = rotors.get(i).encodeForward(intermediate);
         }
 
