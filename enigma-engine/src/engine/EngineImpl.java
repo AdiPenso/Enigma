@@ -6,6 +6,8 @@ import generated.BTEPositioning;
 import generated.BTEReflector;
 import generated.BTEReflect;
 
+import loadManager.LoadManager;
+import loadManager.LoadManagerImpl;
 import machine.code.Code;
 import machine.machine.Machine;
 
@@ -26,7 +28,7 @@ public class EngineImpl implements Engine {
 
     private Machine machine;
     private String currentAbc;        // TODO the ABC should be in Machine or temporary variable ? cached ABC string of the last valid configuration
-    //private LoadManager loadManager; //TODO implement LoadManager class
+    private LoadManager loadManager; //TODO implement LoadManager class
     //private StatisticsManager statisticsManager; //TODO implement StatisticsManager class
     private Repository repository; //TODO implement Repository class
 
@@ -34,15 +36,13 @@ public class EngineImpl implements Engine {
         this.machine = null;
         this.currentAbc = null;
         this.repository = null;
+        this.loadManager = new LoadManagerImpl();
     }
 
     @Override
     public void loadXml(String filePath) {
-        basicFileChecks(filePath);
 
-        BTEEnigma dto = parseXml(filePath);
-
-        // 3. validate configuration according to the exercise rules
+        BTEEnigma dto = loadManager.load(filePath);
         validateConfiguration(dto);
 
         // 4. build a new Machine from the configuration
@@ -93,38 +93,6 @@ public class EngineImpl implements Engine {
     public void statistics() {
 
     }
-    private BTEEnigma parseXml(String filePath) {
-        try {
-            // JAXBContext is a factory that "knows" how to map between XML and Java classes
-            JAXBContext context = JAXBContext.newInstance(BTEEnigma.class);
-
-            // Unmarshaller is the component that performs XML -> Java conversion
-            Unmarshaller unmarshaller = context.createUnmarshaller();
-
-            // unmarshal(...) reads the XML file and creates a full object graph in memory
-            return (BTEEnigma) unmarshaller.unmarshal(new File(filePath));
-
-        } catch (JAXBException e) {
-            // schema-wise problem, or XML not matching the XSD
-            throw new ConfigurationException(
-                    "Failed to parse XML file '" + filePath + "': " + e.getMessage(), e);
-        }
-    }
-
-    private void basicFileChecks(String filePath) {
-        if (filePath == null || filePath.trim().isEmpty()) {
-            throw new ConfigurationException("File path must not be empty.");
-        }
-
-        File file = new File(filePath);
-        if (!file.exists() || !file.isFile()) {
-            throw new ConfigurationException("File does not exist: " + filePath);
-        }
-
-        if (!filePath.toLowerCase().endsWith(".xml")) {
-            throw new ConfigurationException("File must have '.xml' extension.");
-        }
-    }
 
     private void validateConfiguration(BTEEnigma dto) {
         // 3.1 ABC
@@ -137,7 +105,6 @@ public class EngineImpl implements Engine {
         // 3.3 Reflectors
         validateReflectors(dto.getBTEReflectors().getBTEReflector(), abc);
     }
-
 
     private String extractAndValidateAbc(BTEEnigma dto) {
         String rawAbc = dto.getABC();
