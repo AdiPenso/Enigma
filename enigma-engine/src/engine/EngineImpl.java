@@ -459,40 +459,40 @@ public class EngineImpl implements Engine {
         return repository;
     }
 
-    private void buildCodeAndSet(List<Integer> rotorIdsRightToLeft, String initialPositionsRightToLeft, int reflectorIdNumeric) {
-
-        String abc = repository.getAbc();
-        int rotorsCount = rotorIdsRightToLeft.size();
-
-        List<Rotor> rotors = new ArrayList<>(rotorsCount);
-        List<Integer> notchOffsetsRightToLeft = new ArrayList<>(rotorsCount);
-
-        for (int i = 0; i < rotorsCount; i++) {
-            int rotorId = rotorIdsRightToLeft.get(i);
-            Rotor rotor = repository.getRotor(rotorId);
-
-            char pos = initialPositionsRightToLeft.charAt(i);
-            int index = abc.indexOf(pos);
-
-            rotor.setPosition(index);
-            rotors.add(rotor);
-            notchOffsetsRightToLeft.add(rotor.getNotchIndex());
-        }
-
-        Reflector reflector = repository.getReflector(reflectorIdNumeric);
-
-        Code code = new CodeImpl(rotors, reflector);
-        ensureMachineCreated();
-        machine.setCode(code);
-
-        statisticsManager.recordNewCodeConfiguration(
-                rotorIdsRightToLeft,
-                notchOffsetsRightToLeft,
-                initialPositionsRightToLeft,
-                reflectorIdNumeric
-        );
-
-    }
+//    private void buildCodeAndSet(List<Integer> rotorIdsRightToLeft, String initialPositionsRightToLeft, int reflectorIdNumeric) {
+//
+//        String abc = repository.getAbc();
+//        int rotorsCount = rotorIdsRightToLeft.size();
+//
+//        List<Rotor> rotors = new ArrayList<>(rotorsCount);
+//        List<Integer> notchOffsetsRightToLeft = new ArrayList<>(rotorsCount);
+//
+//        for (int i = 0; i < rotorsCount; i++) {
+//            int rotorId = rotorIdsRightToLeft.get(i);
+//            Rotor rotor = repository.getRotor(rotorId);
+//
+//            char pos = initialPositionsRightToLeft.charAt(i);
+//            int index = abc.indexOf(pos);
+//
+//            rotor.setPosition(index);
+//            rotors.add(rotor);
+//            notchOffsetsRightToLeft.add(rotor.getNotchIndex());
+//        }
+//
+//        Reflector reflector = repository.getReflector(reflectorIdNumeric);
+//
+//        Code code = new CodeImpl(rotors, reflector);
+//        ensureMachineCreated();
+//        machine.setCode(code);
+//
+//        statisticsManager.recordNewCodeConfiguration(
+//                rotorIdsRightToLeft,
+//                notchOffsetsRightToLeft,
+//                initialPositionsRightToLeft,
+//                reflectorIdNumeric
+//        );
+//
+//    }
 
     private void ensureMachineCreated() { //TODO change name if needed (there is another function called ensureMachineLoaded)
         if (machine == null) {
@@ -596,10 +596,11 @@ public class EngineImpl implements Engine {
         String initialPositionsRightToLeft = lastSession.getInitialPositionsRightToLeft();
         int reflectorIdNumeric = lastSession.getReflectorIdNumeric();
 
-        buildCodeAndSet(
+        applyCodeToMachine(
                 new ArrayList<>(rotorIdsRightToLeft),
                 initialPositionsRightToLeft,
-                reflectorIdNumeric
+                reflectorIdNumeric,
+                false
         );
     }
 
@@ -761,11 +762,60 @@ public class EngineImpl implements Engine {
             rotorIdsRightToLeft.add(rotorIdsLeftToRight.get(i));
         }
 
-        String initialPositionsRightToLeft = positionsTrimmed;
+        String initialPositionsRightToLeft = new StringBuilder(positionsTrimmed).reverse().toString();
+        //String initialPositionsRightToLeft = positionsTrimmed.reverse();
 
         // 7. Delegate to existing helper that builds Code, sets machine, and records statistics
         buildCodeAndSet(rotorIdsRightToLeft, initialPositionsRightToLeft, reflectorIdDecimal);
     }
+
+    private void applyCodeToMachine(List<Integer> rotorIdsRightToLeft,
+                                    String initialPositionsRightToLeft,
+                                    int reflectorIdNumeric,
+                                    boolean recordStatistics) {
+
+        String abc = repository.getAbc();
+        int rotorsCount = rotorIdsRightToLeft.size();
+
+        List<Rotor> rotors = new ArrayList<>(rotorsCount);
+        List<Integer> notchOffsetsRightToLeft = new ArrayList<>(rotorsCount);
+
+        for (int i = 0; i < rotorsCount; i++) {
+            int rotorId = rotorIdsRightToLeft.get(i);
+
+            // 🔥 השינוי החשוב: רוטור טרי
+            Rotor rotor = repository.createFreshRotor(rotorId);
+
+            char pos = initialPositionsRightToLeft.charAt(i);
+            //int index = abc.indexOf(pos);
+            int index = repository.getRotor(rotorId).getRightSequence().indexOf(pos); // שינוי חשוב נוסף
+            rotor.setPosition(index); // זה משנה position + notchIndex מהמצב ההתחלתי
+            rotors.add(rotor);
+            notchOffsetsRightToLeft.add(rotor.getNotchIndex());
+        }
+
+        Reflector reflector = repository.getReflector(reflectorIdNumeric);
+
+        Code code = new CodeImpl(rotors, reflector);
+        ensureMachineCreated();
+        machine.setCode(code);
+
+        if (recordStatistics) {
+            statisticsManager.recordNewCodeConfiguration(
+                    rotorIdsRightToLeft,
+                    notchOffsetsRightToLeft,
+                    initialPositionsRightToLeft,
+                    reflectorIdNumeric
+            );
+        }
+    }
+
+    private void buildCodeAndSet(List<Integer> rotorIdsRightToLeft,
+                                 String initialPositionsRightToLeft,
+                                 int reflectorIdNumeric) {
+        applyCodeToMachine(rotorIdsRightToLeft, initialPositionsRightToLeft, reflectorIdNumeric, true);
+    }
+
 
 
 

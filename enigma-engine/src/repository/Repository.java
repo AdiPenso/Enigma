@@ -24,4 +24,6 @@ public interface Repository {
     int getAvailableRotorsCount();
 
     int getAvailableReflectorsCount();
+
+    Rotor createFreshRotor(int rotorId);
 }

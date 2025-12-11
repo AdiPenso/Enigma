@@ -85,7 +85,7 @@ public class RotorImpl implements Rotor {
     public boolean advance() {
         int previousPosition = position;
         position = (position + 1) % size;
-        notchIndex = (notchIndex - 1) % size;
+        notchIndex = Math.floorMod(notchIndex - 1, size);
        //TODO potential bugs
         //return previousPosition == notchIndex;
         return notchIndex == 0;
@@ -100,6 +100,7 @@ public class RotorImpl implements Rotor {
     public int getPosition() {
         return this.position;
     }
+
 
 
     @Override
@@ -148,6 +149,29 @@ public class RotorImpl implements Rotor {
     @Override
     public int getId() {
         return this.id;
+    }
+
+    /// new changes
+    public String getAlphabet() {
+        return alphabet;
+    }
+
+    @Override
+    public String getRightSequence() {
+        return rightSequence;
+    }
+
+    public String getLeftSequence() {
+        return leftSequence;
+    }
+
+    /**
+     * The original notch position in base-1 *when the rotor is at position 0*.
+     */
+    public int getOriginalNotchBase1() {
+        // בעת יצירת הרוטור: notchIndex = notchBase1 - 1, position = 0
+        // אז פה אנחנו מניחים שהאובייקט המשמש כתבנית (prototype) נשאר בסטייט ההתחלתי.
+        return notchIndex + 1;
     }
 
 

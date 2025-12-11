@@ -14,6 +14,8 @@ public interface Rotor {
 
     int getId();
 
+    String getRightSequence();
+
 //    void step();
 //    boolean atNotch();
 }

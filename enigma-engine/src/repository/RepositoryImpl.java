@@ -1,7 +1,9 @@
 package repository;
 
+import engine.ConfigurationException;
 import machine.reflector.Reflector;
 import machine.rotor.Rotor;
+import machine.rotor.RotorImpl;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -64,6 +66,29 @@ public class RepositoryImpl implements Repository {
     @Override
     public int getAvailableReflectorsCount() {
         return reflectorsById.size();
+    }
+
+    @Override
+    public Rotor createFreshRotor(int rotorId) {
+        Rotor prototype = rotorsById.get(rotorId);
+        if (prototype == null) {
+            throw new ConfigurationException("Rotor id " + rotorId + " does not exist.");
+        }
+
+        if (!(prototype instanceof RotorImpl)) {
+            throw new IllegalStateException("Repository expected RotorImpl as prototype.");
+        }
+
+        RotorImpl proto = (RotorImpl) prototype;
+
+        // בונים רוטור חדש לפי אותם פרמטרים כמו מה-XML
+        return new RotorImpl(
+                proto.getAlphabet(),
+                proto.getRightSequence(),
+                proto.getLeftSequence(),
+                proto.getOriginalNotchBase1(),
+                proto.getId()
+        );
     }
 
 }
