@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Main-Class: Main
+Class-Path: engine-Jar.jar dto-Jar.jar machine-Jar.jar lib/angus-activat
+ ion.jar lib/jakarta.activation-api.jar lib/jakarta.xml.bind-api.jar lib
+ /javax.annotation.jar lib/javax.ejb.jar lib/javax.jms.jar lib/javax.per
+ sistence.jar lib/javax.resource.jar lib/javax.servlet.jar lib/javax.ser
+ vlet.jsp.jar lib/javax.servlet.jsp.jstl.jar lib/javax.transaction.jar l
+ ib/jaxb-core.jar lib/jaxb-impl.jar lib/jaxb-xjc.jar
+

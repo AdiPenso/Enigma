@@ -1,11 +1,11 @@
 package dto;
 
 public class MachineSpecificationDTO {
-    private final int totalRotorsCount;           // סה"כ רוטורים אפשריים לבחירה
-    private final int totalReflectorsCount;       // סה"כ משקפים
-    private final long totalProcessedMessages;    // כמה הודעות עובדו עד כה
-    private final String originalCodeConfiguration; // קוד מקור בפורמט <...><...><...>
-    private final String currentCodeConfiguration;  // קוד נוכחי בפורמט <...><...><...>
+    private final int totalRotorsCount;
+    private final int totalReflectorsCount;
+    private final long totalProcessedMessages;
+    private final String originalCodeConfiguration;
+    private final String currentCodeConfiguration;
 
     public MachineSpecificationDTO(int totalRotorsCount,
                                    int totalReflectorsCount,

@@ -84,7 +84,6 @@ public class ConsoleUI {
         System.out.print  ("Please choose an option (1-8): ");
     }
 
-    // ========== 1. Load XML file ==========
     private void handleLoadMachineFromFile() {
         System.out.print("Please enter full XML file path: ");
         String xmlPath = scanner.nextLine().trim();
@@ -101,17 +100,15 @@ public class ConsoleUI {
             System.out.println("Please correct the issue or try a different file.");
 
         } catch (Exception e) {
-            // fallback for unexpected cases
             System.out.println("An unexpected error occurred while loading the XML file.");
             System.out.println("Details: " + e.getMessage());
             System.out.println("The system remains unchanged. You may continue.");
         }
     }
 
-    // ========== 2. Show machine specs ==========
     private void handleShowMachineSpecification() {
         try {
-            // Ask the engine for the current machine specification (DTO)
+
             MachineSpecificationDTO machineSpecification = engine.getMachineSpecification();
 
             System.out.println("Machine specifications:");
@@ -124,7 +121,6 @@ public class ConsoleUI {
 
             System.out.println();
 
-            // Original code configuration (last code defined by commands 3/4)
             System.out.println("Original code configuration (last code set by commands 3/4):");
             if (machineSpecification.getOriginalCodeConfiguration() != null) {
                 System.out.println(machineSpecification.getOriginalCodeConfiguration());
@@ -133,8 +129,6 @@ public class ConsoleUI {
             }
 
             System.out.println();
-
-            // Current code configuration (may differ from the original because of rotor stepping)
             System.out.println("Current code configuration:");
             if (machineSpecification.getCurrentCodeConfiguration() != null) {
                 System.out.println(machineSpecification.getCurrentCodeConfiguration());
@@ -143,13 +137,11 @@ public class ConsoleUI {
             }
 
         } catch (ConfigurationException e) {
-            // According to your getMachineSpecification(), this happens when no XML has been loaded yet
             System.out.println("Cannot show machine specifications.");
             System.out.println("Reason: " + e.getMessage());
             System.out.println("Please load a valid XML file first (command 1).");
 
         } catch (Exception e) {
-            // Safety net for any unexpected error
             System.out.println("An unexpected error occurred while retrieving machine specifications.");
             System.out.println("Details: " + e.getMessage());
         }
@@ -157,13 +149,11 @@ public class ConsoleUI {
 
     private void handleManualCodeConfiguration() {
         try {
-            // Ensure configuration is loaded and also get #reflectors for the menu
             MachineSpecificationDTO spec = engine.getMachineSpecification();
             int totalReflectors = spec.getTotalReflectorsCount();
 
-            // ---------- A. Rotors ----------
             System.out.println("Enter rotor IDs as a comma-separated list (left to right).");
-            System.out.println("Example: 23,542,231,545");
+            System.out.println("Example: 23,542,231");
             System.out.print("Rotors: ");
             String rotorsInput = scanner.nextLine().trim();
 
@@ -171,8 +161,6 @@ public class ConsoleUI {
                 System.out.println("Rotors list must not be empty. Returning to main menu.");
                 return;
             }
-
-// Validate basic format: digits separated by commas, optional spaces around commas
             if (!rotorsInput.matches("\\d+(\\s*,\\s*\\d+)*")) {
                 System.out.println("Invalid format for rotor list.");
                 System.out.println("Please enter decimal numbers separated by commas, e.g.: 23,542,231,545");
@@ -189,16 +177,13 @@ public class ConsoleUI {
                     }
                 }
             } catch (NumberFormatException e) {
-                // Shouldn’t really happen if regex passed, but kept as a safety net
                 System.out.println("Invalid rotor IDs. Please enter decimal numbers only, separated by commas.");
                 return;
             }
 
-
-            // ---------- B. Initial positions ----------
             System.out.println();
             System.out.println("Enter initial rotor positions as a continuous string.");
-            System.out.println("Example: A8D4");
+            System.out.println("Example: A8D");
             System.out.print("Positions: ");
             String positionsInput = scanner.nextLine().trim();
 
@@ -207,11 +192,10 @@ public class ConsoleUI {
                 return;
             }
 
-            // ---------- C. Reflector ----------
             System.out.println();
             System.out.println("Choose reflector by index (decimal):");
             for (int i = 1; i <= totalReflectors; i++) {
-                System.out.println(i + ". Reflector " + i);  // If you have Roman IDs, you can print them here instead
+                System.out.println(i + ". Reflector " + i);
             }
             System.out.print("Reflector index: ");
             String reflectorIndexStr = scanner.nextLine().trim();
@@ -224,40 +208,33 @@ public class ConsoleUI {
                 return;
             }
 
-            // ---------- Delegate to engine ----------
             engine.setManualCodeConfiguration(
                     rotorIdsLeftToRight,
                     positionsInput,
                     reflectorIndexDecimal
             );
 
-            // If we reached here, configuration was successful
             System.out.println();
             System.out.println("Manual code configuration has been set successfully.");
 
         } catch (ConfigurationException e) {
-            // Any validation / configuration problem from the engine
             System.out.println("Failed to set manual code configuration.");
             System.out.println("Reason: " + e.getMessage());
             System.out.println("Please correct the input and try again from the menu.");
 
         } catch (Exception e) {
-            // Safety net
             System.out.println("An unexpected error occurred while setting manual code configuration.");
             System.out.println("Details: " + e.getMessage());
         }
     }
 
-    // ========== 4. Automatic code configuration ==========
     private void handleAutomaticCodeConfiguration() {
         try {
-            // Ask the engine to choose a random code and give us its details
             AutomaticCodeDTO autoCode = engine.codeAutomatic();
 
             System.out.println("A random code configuration has been chosen and set as the active code.");
             System.out.println();
 
-            // Format rotor IDs as a comma-separated list
             String rotorsStr = autoCode.getRotorIdsRightToLeft()
                     .stream()
                     .map(String::valueOf)
@@ -267,9 +244,8 @@ public class ConsoleUI {
             System.out.println("Initial positions (right-to-left): "
                     + autoCode.getInitialPositionsRightToLeft());
 
-            // Reflector – you can show as decimal or Roman; here I'll show both in a simple way
             int reflectorId = autoCode.getReflectorIdNumeric();
-            String reflectorRoman = intToRoman(reflectorId); // small helper in UI
+            String reflectorRoman = intToRoman(reflectorId);
 
             System.out.println("Chosen reflector: " + reflectorId + " (" + reflectorRoman + ")");
 
@@ -313,8 +289,6 @@ public class ConsoleUI {
         }
     }
 
-//
-//    // ========== 6. Reset current code ==========
 private void handleResetCode() {
     try {
         engine.resetToLastCode();
@@ -330,8 +304,8 @@ private void handleResetCode() {
         System.out.println("Details: " + e.getMessage());
     }
 }
-//
-//    // ========== 7. History & statistics ==========
+
+
 private void handleHistoryAndStatistics() {
     try {
         String history = engine.getHistoryAndStatistics();
@@ -341,7 +315,6 @@ private void handleHistoryAndStatistics() {
         System.out.println(history);
 
     } catch (ConfigurationException e) {
-        // למשל: לא נטען עדיין קובץ XML
         System.out.println("Cannot show history and statistics.");
         System.out.println("Reason: " + e.getMessage());
         System.out.println("Please load a valid XML file first (command 1).");

@@ -37,17 +37,12 @@ import static engine.Utils.romanToInt;
 
 public class EngineImpl implements Engine {
 
-    private static final int requiredRotorsCount = 3; // TODO make configurable if needed
+    private static final int requiredRotorsCount = 3;
     private Machine machine;
-    private String currentAbc;        // TODO the ABC should be in Machine or temporary variable ? cached ABC string of the last valid configuration
-    private LoadManager loadManager; //TODO implement LoadManager class
-    private StatisticsManager statisticsManager; //TODO implement StatisticsManager class
-    private Repository repository; //TODO implement Repository class
-
-    //was added to check automatic coding
-//    private List<Integer> lastRotorIdsRightToLeft;
-//    private String lastInitialPositionsRightToLeft;
-//    private int lastReflectorId;
+    private String currentAbc;
+    private final LoadManager loadManager;
+    private StatisticsManager statisticsManager;
+    private Repository repository;
 
     public EngineImpl() {
         this.machine = null;
@@ -63,32 +58,21 @@ public class EngineImpl implements Engine {
         BTEEnigma dto = loadManager.load(filePath);
         validateConfiguration(dto);
 
-        // 4. build a new Machine from the configuration
-        Repository newRepository = buildRepository(dto);
-
-        // 5. only now, after everything succeeded, replace the current machine
-        this.repository = newRepository;
-
-        this.machine = null; //TODO not sure that it's correct
+        this.repository = buildRepository(dto);
+        this.machine = null;
         this.statisticsManager = new StatisticsManagerImpl();
     }
 
-
     @Override
     public MachineSpecificationDTO getMachineSpecification() {
-        // According to the spec, command 2 is allowed only after a valid XML file
-//        if (repository == null) {
-//            throw new ConfigurationException("No configuration loaded yet. Please load an XML file first.");
-//        }
         ensureRepositoryLoaded();
 
         int totalRotors = repository.getAvailableRotorsCount();
         int totalReflectors = repository.getAvailableReflectorsCount();
         long totalMessages = statisticsManager.getTotalProcessedMessages();
-
-        // Original code configuration: last code defined by commands 3/4, if any
         String originalCodeStr = null;
         CodeUsageRecord lastSession = statisticsManager.getLastSession();
+
         if (lastSession != null) {
             originalCodeStr = formatCodeFromSnapshot(
                     lastSession.getRotorIdsRightToLeft(),
@@ -115,14 +99,12 @@ public class EngineImpl implements Engine {
     private String formatCodeFromSnapshot(List<Integer> rotorIdsRightToLeft, String initialPositionsRightToLeft, List<Integer> notchOffsetsRightToLeft, int reflectorIdNumeric) {
 
         if (rotorIdsRightToLeft == null || initialPositionsRightToLeft == null) {
-            return null; // no code defined yet
+            return null;
         }
 
-        //String abc = repository.getAbc();
         int rotorsCount = rotorIdsRightToLeft.size();
         StringBuilder sb = new StringBuilder();
 
-        // 1. <rotorIds> – LEFT to RIGHT
         sb.append('<');
         for (int i = rotorsCount - 1; i >= 0; i--) {
             sb.append(rotorIdsRightToLeft.get(i));
@@ -132,7 +114,6 @@ public class EngineImpl implements Engine {
         }
         sb.append('>');
 
-        // 2. <positionsWithOffsets> – also LEFT to RIGHT
         sb.append('<');
         for (int i = rotorsCount - 1; i >= 0; i--) {
             char posChar = initialPositionsRightToLeft.charAt(i);
@@ -149,7 +130,6 @@ public class EngineImpl implements Engine {
         }
         sb.append('>');
 
-        // 3. <reflectorRoman> – using the inverse of romanToInt
         String reflectorRoman = intToRoman(reflectorIdNumeric);
         sb.append('<')
                 .append(reflectorRoman)
@@ -162,9 +142,8 @@ public class EngineImpl implements Engine {
         ensureMachineLoaded();
 
         Code code = machine.getCode();
-        List<Rotor> rotorsRightToLeft = code.getRotors(); // נסי להוסיף getRotors() ל-Code
+        List<Rotor> rotorsRightToLeft = code.getRotors();
         int reflectorId = code.getReflector().getId();
-
         int rotorsCount = rotorsRightToLeft.size();
         StringBuilder sb = new StringBuilder();
 
@@ -179,7 +158,6 @@ public class EngineImpl implements Engine {
 
         sb.append('<');
         for (int i = rotorsCount - 1; i >= 0; i--) {
-
             Rotor rotor = rotorsRightToLeft.get(i);
             char atWindowChar = currentAbc.charAt(rotor.getPosition());
             int notchOffset = rotor.getNotchIndex();
@@ -193,22 +171,18 @@ public class EngineImpl implements Engine {
                 sb.append(',');
             }
         }
-        sb.append('>');
 
+        sb.append('>');
         sb.append('<').append(intToRoman(reflectorId)).append('>');
 
         return sb.toString();
     }
 
     private void validateConfiguration(BTEEnigma dto) {
-        // 3.1 ABC
         String abc = extractAndValidateAbc(dto);
-        this.currentAbc = abc; // store for later use
+        this.currentAbc = abc;
 
-        // 3.2 Rotors
         validateRotors(dto.getBTERotors().getBTERotor(), abc);
-
-        // 3.3 Reflectors
         validateReflectors(dto.getBTEReflectors().getBTEReflector(), abc);
     }
 
@@ -218,7 +192,7 @@ public class EngineImpl implements Engine {
             throw new ConfigurationException("ABC element is missing from XML.");
         }
 
-        String abc = rawAbc.trim(); // remove spaces at start/end as required
+        String abc = rawAbc.trim();
 
         if (abc.isEmpty()) {
             throw new ConfigurationException("ABC must not be empty.");
@@ -228,7 +202,6 @@ public class EngineImpl implements Engine {
             throw new ConfigurationException("ABC length must be even. Found length: " + abc.length());
         }
 
-        // Optional but recommended: ensure all letters are unique
         Set<Character> seen = new HashSet<>();
         for (char ch : abc.toCharArray()) {
             char upper = Character.toUpperCase(ch);
@@ -245,16 +218,14 @@ public class EngineImpl implements Engine {
             throw new ConfigurationException("Configuration must define at least 3 rotors, but none were found.");
         }
 
-        if (rotors.size() < 3) {
+        if (rotors.size() < requiredRotorsCount) {
             throw new ConfigurationException("Configuration must define at least 3 rotors. Found: " + rotors.size());
         }
 
-        // 1. unique ids and continuous range starting from 1
         Set<Integer> ids = new HashSet<>();
         int maxId = 0;
-
         for (BTERotor rotor : rotors) {
-            int id = rotor.getId(); // assuming getId() gives int, adjust if needed
+            int id = rotor.getId();
             if (!ids.add(id)) {
                 throw new ConfigurationException("Duplicate rotor id: " + id);
             }
@@ -263,7 +234,6 @@ public class EngineImpl implements Engine {
             }
         }
 
-        // Check continuous range 1..maxId (no holes, must contain 1)
         if (!ids.contains(1) || ids.size() != maxId) {
             throw new ConfigurationException("Rotor ids must form a continuous range from 1 to " + maxId +
                     ". Found ids: " + ids);
@@ -271,7 +241,7 @@ public class EngineImpl implements Engine {
 
         int abcLength = abc.length();
 
-        // 2. per rotor validation
+
         for (BTERotor rotor : rotors) {
             int id = rotor.getId();
             List<BTEPositioning> positions = rotor.getBTEPositioning();
@@ -281,14 +251,12 @@ public class EngineImpl implements Engine {
                         " mappings (as ABC length), but found " + positions.size());
             }
 
-            // 2.a notch in range [1, rotorSize]
             int notch = rotor.getNotch();
             if (notch < 1 || notch > positions.size()) {
                 throw new ConfigurationException("Rotor " + id + " has invalid notch: " + notch +
                         ". Must be in range [1, " + positions.size() + "].");
             }
 
-            // 2.b no duplicate letters in right/left and all letters must belong to ABC
             Set<Character> rightSeen = new HashSet<>();
             Set<Character> leftSeen = new HashSet<>();
 
@@ -327,7 +295,7 @@ public class EngineImpl implements Engine {
         int abcLength = abc.length();
 
         for (BTEReflector reflector : reflectors) {
-            String romanId = reflector.getId(); // e.g. "I", "II"
+            String romanId = reflector.getId();
             int numId = romanToInt(romanId);
 
             if (numId < 1 || numId > 5) {
@@ -340,13 +308,11 @@ public class EngineImpl implements Engine {
 
             List<BTEReflect> mappings = reflector.getBTEReflect();
 
-            // amount of mappings must be ABC length / 2
             if (mappings.size() != abcLength / 2) {
                 throw new ConfigurationException("Reflector " + romanId + " must contain " + (abcLength / 2) +
                         " mappings, but found " + mappings.size());
             }
 
-            // We also want to ensure no mapping i->i and input/output within range
             Set<Integer> usedInputs = new HashSet<>();
             Set<Integer> usedOutputs = new HashSet<>();
 
@@ -364,7 +330,6 @@ public class EngineImpl implements Engine {
                             " has mapping out of ABC range: " + input + " -> " + output);
                 }
 
-                // ensure inputs/outputs do not repeat (optional but very reasonable)
                 if (!usedInputs.add(input)) {
                     throw new ConfigurationException("Reflector " + romanId +
                             " uses input position " + input + " more than once.");
@@ -376,7 +341,6 @@ public class EngineImpl implements Engine {
             }
         }
 
-        // check reflector ids are continuous from I upwards (1..max without holes)
         int maxId = numericIds.stream().mapToInt(Integer::intValue).max().orElse(0);
         if (!numericIds.contains(1) || numericIds.size() != maxId) {
             throw new ConfigurationException("Reflector ids must form a continuous roman range starting from I. " +
@@ -386,31 +350,28 @@ public class EngineImpl implements Engine {
 
     private RepositoryImpl buildRepository(BTEEnigma dto) {
         String abc = this.currentAbc;
-
-        // ---- build rotors map: id -> Rotor ----
         Map<Integer, Rotor> rotorsById = new HashMap<>();
+
         for (BTERotor rotorDto : dto.getBTERotors().getBTERotor()) {
             int id = rotorDto.getId();
             String rightSeq = buildRightSequence(rotorDto);
             String leftSeq = buildLeftSequence(rotorDto);
-            int notch = rotorDto.getNotch(); // 1-based index
-
-            // RotorImpl(String alphabet, String rightSeq, String leftSeq, int notchBase1, int initialPosition)
+            int notch = rotorDto.getNotch();
             Rotor rotor = new RotorImpl(abc, rightSeq, leftSeq, notch, id);
+
             rotorsById.put(id, rotor);
         }
 
-        // ---- build reflectors map: numericId -> Reflector ----
         Map<Integer, Reflector> reflectorsById = new HashMap<>();
+
         for (BTEReflector reflectorDto : dto.getBTEReflectors().getBTEReflector()) {
             int numericId = romanToInt(reflectorDto.getId());
             Map<Integer, Integer> mapping = buildReflectorMapping(reflectorDto, abc.length());
-
             Reflector reflector = new ReflectorImpl(numericId, mapping);
+
             reflectorsById.put(numericId, reflector);
         }
 
-        // InMemoryRepository ctor internally calls store(...)
         return new RepositoryImpl(abc, rotorsById, reflectorsById);
     }
 
@@ -419,6 +380,7 @@ public class EngineImpl implements Engine {
 
         for (BTEPositioning pos : rotorDto.getBTEPositioning()) {
             char right = Character.toUpperCase(pos.getRight().charAt(0));
+
             sb.append(right);
         }
 
@@ -426,11 +388,11 @@ public class EngineImpl implements Engine {
     }
 
     private String buildLeftSequence(BTERotor rotorDto) {
-        // Similarly, build a string of left-letters in the same order
         StringBuilder sb = new StringBuilder();
 
         for (BTEPositioning pos : rotorDto.getBTEPositioning()) {
             char left = Character.toUpperCase(pos.getLeft().charAt(0));
+
             sb.append(left);
         }
 
@@ -441,60 +403,19 @@ public class EngineImpl implements Engine {
         Map<Integer, Integer> mapping = new HashMap<>();
 
         for (BTEReflect reflect : reflectorDto.getBTEReflect()) {
-            int input = reflect.getInput();   // 1-based
-            int output = reflect.getOutput(); // 1-based
-
-            int inIndex = input - 1;   // convert to 0-based
-            int outIndex = output - 1; // convert to 0-based
+            int input = reflect.getInput();
+            int output = reflect.getOutput();
+            int inIndex = input - 1;
+            int outIndex = output - 1;
 
             mapping.put(inIndex, outIndex);
-            mapping.put(outIndex, inIndex); // reflectors are symmetric
+            mapping.put(outIndex, inIndex);
         }
 
         return mapping;
     }
 
-    // TODO optional- not sure if needed
-    public Repository getRepository() {
-        return repository;
-    }
-
-//    private void buildCodeAndSet(List<Integer> rotorIdsRightToLeft, String initialPositionsRightToLeft, int reflectorIdNumeric) {
-//
-//        String abc = repository.getAbc();
-//        int rotorsCount = rotorIdsRightToLeft.size();
-//
-//        List<Rotor> rotors = new ArrayList<>(rotorsCount);
-//        List<Integer> notchOffsetsRightToLeft = new ArrayList<>(rotorsCount);
-//
-//        for (int i = 0; i < rotorsCount; i++) {
-//            int rotorId = rotorIdsRightToLeft.get(i);
-//            Rotor rotor = repository.getRotor(rotorId);
-//
-//            char pos = initialPositionsRightToLeft.charAt(i);
-//            int index = abc.indexOf(pos);
-//
-//            rotor.setPosition(index);
-//            rotors.add(rotor);
-//            notchOffsetsRightToLeft.add(rotor.getNotchIndex());
-//        }
-//
-//        Reflector reflector = repository.getReflector(reflectorIdNumeric);
-//
-//        Code code = new CodeImpl(rotors, reflector);
-//        ensureMachineCreated();
-//        machine.setCode(code);
-//
-//        statisticsManager.recordNewCodeConfiguration(
-//                rotorIdsRightToLeft,
-//                notchOffsetsRightToLeft,
-//                initialPositionsRightToLeft,
-//                reflectorIdNumeric
-//        );
-//
-//    }
-
-    private void ensureMachineCreated() { //TODO change name if needed (there is another function called ensureMachineLoaded)
+    private void ensureMachineCreated() {
         if (machine == null) {
             machine = new MachineImpl(new KeyboardImpl(repository.getAbc()));
         }
@@ -502,20 +423,16 @@ public class EngineImpl implements Engine {
 
     @Override
     public AutomaticCodeDTO codeAutomatic() {
-
-//        if (repository == null) {
-//            throw new ConfigurationException("No configuration loaded yet. Please load an XML file first.");
-//        }
         ensureRepositoryLoaded();
 
         String abc = repository.getAbc();
         Random random = new Random();
-
         List<Integer> allRotorIds = new ArrayList<>(repository.getRotorsById().keySet());
+
         Collections.shuffle(allRotorIds, random);
         List<Integer> chosenRotorIds = allRotorIds.subList(0, requiredRotorsCount);
-
         StringBuilder positions = new StringBuilder(requiredRotorsCount);
+
         for (int i = 0; i < requiredRotorsCount; i++) {
             positions.append(abc.charAt(random.nextInt(abc.length())));
         }
@@ -532,30 +449,18 @@ public class EngineImpl implements Engine {
         );
     }
 
-    // was added to check automatic coding
     @Override
     public String processText(String message) {
-
-//        if (repository == null) {
-//            throw new ConfigurationException("No configuration loaded yet. Please load an XML file first.");
-//        }
-
         ensureRepositoryLoaded();
         ensureMachineLoaded();
-        // 2. make sure a code configuration (manual/automatic) was set
-//        if (machine == null) {
-//            // in your design, machine is created inside buildCodeAndSet,
-//            // so if machine == null there is no active code
-//            throw new ConfigurationException("No code configuration defined yet. Please use commands 3 or 4 before processing text.");
-//        }
 
         if (message == null) {
             throw new ConfigurationException("Input message must not be null.");
         }
 
+        message = message.toUpperCase();
         String abc = repository.getAbc();
 
-        // 3. validate all characters are in the machine alphabet
         for (char c : message.toCharArray()) {
             if (abc.indexOf(c) == -1) {
                 throw new ConfigurationException(
@@ -570,22 +475,20 @@ public class EngineImpl implements Engine {
             char processedChar = machine.processChar(c);
             processedMessage.append(processedChar);
         }
+
         long end = System.nanoTime();
         long durationNanos = end - start;
         String output = processedMessage.toString();
+
         statisticsManager.recordProcessedMessage(message, output, durationNanos);
 
         return output;
     }
 
-    // was added to check automatic coding
     @Override
-    public void resetToLastCode() { //TODO chet writes alone, check if it's ok
-//        if (repository == null) {
-//            throw new ConfigurationException("No configuration loaded yet. Please load an XML file first.");
-//        }
-        ensureRepositoryLoaded();
+    public void resetToLastCode() {
 
+        ensureRepositoryLoaded();
         CodeUsageRecord lastSession = statisticsManager.getLastSession();
 
         if (lastSession == null) {
@@ -606,9 +509,6 @@ public class EngineImpl implements Engine {
 
     @Override
     public String getHistoryAndStatistics() {
-//        if (repository == null) {
-//            throw new ConfigurationException("No configuration loaded yet – cannot show history and statistics.");
-//        }
         ensureRepositoryLoaded();
 
         List<CodeUsageRecord> sessions = statisticsManager.getAllSessions();
@@ -621,7 +521,6 @@ public class EngineImpl implements Engine {
         int sessionIndex = 1;
 
         for (CodeUsageRecord session : sessions) {
-            // א. תצורת הקוד המקורית בפורמט של פקודה 2.4
             String codeConfigStr = formatCodeFromSnapshot(
                     session.getRotorIdsRightToLeft(),
                     session.getInitialPositionsRightToLeft(),
@@ -634,7 +533,6 @@ public class EngineImpl implements Engine {
                     .append(codeConfigStr)
                     .append(System.lineSeparator());
 
-            // ב. כל המחרוזות + זמן ריצה
             List<String> inputs = session.getInputMessages();
             List<String> outputs = session.getOutputMessages();
             List<Long> durations = session.getDurationsNano();
@@ -654,26 +552,12 @@ public class EngineImpl implements Engine {
                 messageIndex++;
             }
 
-            sb.append(System.lineSeparator()); // רווח בין קודים שונים
+            sb.append(System.lineSeparator());
             sessionIndex++;
         }
 
         return sb.toString();
     }
-
-//    @Override
-//    public void ensureMachineLoaded() {
-//        if (repository == null) {
-//            throw new ConfigurationException(
-//                    "No configuration loaded yet. Please load an XML file first (command 1).");
-//        }
-//
-//        if (machine == null) {
-//            // machine נוצר רק כשמגדירים קוד דרך 3/4 (buildCodeAndSet)
-//            throw new ConfigurationException(
-//                    "No code configuration defined yet. Please use command 3 or 4 before processing.");
-//        }
-//    }
 
     private void ensureRepositoryLoaded() {
         if (repository == null) {
@@ -694,11 +578,6 @@ public class EngineImpl implements Engine {
     public void setManualCodeConfiguration(List<Integer> rotorIdsLeftToRight,
                                            String initialPositionsLeftToRight,
                                            int reflectorIdDecimal) {
-
-        // 1. Make sure configuration was loaded
-//        if (repository == null) {
-//            throw new ConfigurationException("No configuration loaded yet. Please load an XML file first.");
-//        }
         ensureRepositoryLoaded();
 
         if (rotorIdsLeftToRight == null || rotorIdsLeftToRight.isEmpty()) {
@@ -711,9 +590,8 @@ public class EngineImpl implements Engine {
          }
 
         int rotorsCount = rotorIdsLeftToRight.size();
-
-        // 2. Validate uniqueness of rotor IDs
         Set<Integer> uniqueRotors = new HashSet<>(rotorIdsLeftToRight);
+
         if (uniqueRotors.size() != rotorsCount) {
             throw new ConfigurationException("Each rotor ID must appear at most once (no duplicates allowed).");
         }
@@ -727,7 +605,6 @@ public class EngineImpl implements Engine {
             }
         }
 
-        // 4. Validate initial positions length and alphabet
         if (initialPositionsLeftToRight == null) {
             throw new ConfigurationException("Initial positions string must not be null.");
         }
@@ -749,7 +626,6 @@ public class EngineImpl implements Engine {
             }
         }
 
-        // 5. Validate reflector ID range: 1..totalReflectors
         int totalReflectors = repository.getAvailableReflectorsCount();
         if (reflectorIdDecimal < 1 || reflectorIdDecimal > totalReflectors) {
             throw new ConfigurationException(
@@ -763,9 +639,7 @@ public class EngineImpl implements Engine {
         }
 
         String initialPositionsRightToLeft = new StringBuilder(positionsTrimmed).reverse().toString();
-        //String initialPositionsRightToLeft = positionsTrimmed.reverse();
 
-        // 7. Delegate to existing helper that builds Code, sets machine, and records statistics
         buildCodeAndSet(rotorIdsRightToLeft, initialPositionsRightToLeft, reflectorIdDecimal);
     }
 
@@ -783,13 +657,11 @@ public class EngineImpl implements Engine {
         for (int i = 0; i < rotorsCount; i++) {
             int rotorId = rotorIdsRightToLeft.get(i);
 
-            // 🔥 השינוי החשוב: רוטור טרי
             Rotor rotor = repository.createFreshRotor(rotorId);
 
             char pos = initialPositionsRightToLeft.charAt(i);
-            //int index = abc.indexOf(pos);
-            int index = repository.getRotor(rotorId).getRightSequence().indexOf(pos); // שינוי חשוב נוסף
-            rotor.setPosition(index); // זה משנה position + notchIndex מהמצב ההתחלתי
+            int index = repository.getRotor(rotorId).getRightSequence().indexOf(pos);
+            rotor.setPosition(index);
             rotors.add(rotor);
             notchOffsetsRightToLeft.add(rotor.getNotchIndex());
         }

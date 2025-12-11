@@ -12,12 +12,8 @@ public interface Engine {
                                            String initialPositionsLeftToRight,
                                            int reflectorIdDecimal);
     AutomaticCodeDTO codeAutomatic();
-    //String process(String input); // TODO need to move messageProcessor from Machine package to here
-
-    //was added for checking automatic coding
     String processText(String text);
     void resetToLastCode();
-
     String getHistoryAndStatistics();
     void ensureMachineLoaded();
 }

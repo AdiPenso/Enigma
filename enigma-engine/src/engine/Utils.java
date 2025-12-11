@@ -3,7 +3,6 @@ package engine;
 public class Utils {
 
     public static String intToRoman(int num) {
-        // According to the exercise, only 1..5 are valid
         return switch (num) {
             case 1 -> "I";
             case 2 -> "II";
@@ -15,7 +14,6 @@ public class Utils {
     }
 
     public static int romanToInt(String roman) {
-        // We only need I..V according to the exercise
         return switch (roman) {
             case "I" -> 1;
             case "II" -> 2;
