@@ -6,4 +6,5 @@ public interface Machine {
     void setCode(Code code);
     char processChar(char input);
 
+    Code getCode();
 }

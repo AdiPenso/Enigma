@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/EX1Enigma.iml" filepath="$PROJECT_DIR$/EX1Enigma.iml" />
       <module fileurl="file://$PROJECT_DIR$/enigma-console/enigma-console.iml" filepath="$PROJECT_DIR$/enigma-console/enigma-console.iml" />
+      <module fileurl="file://$PROJECT_DIR$/enigma-dto/enigma-dto.iml" filepath="$PROJECT_DIR$/enigma-dto/enigma-dto.iml" />
       <module fileurl="file://$PROJECT_DIR$/enigma-engine/enigma-engine.iml" filepath="$PROJECT_DIR$/enigma-engine/enigma-engine.iml" />
       <module fileurl="file://$PROJECT_DIR$/enigma-machine/enigma-machine.iml" filepath="$PROJECT_DIR$/enigma-machine/enigma-machine.iml" />
     </modules>

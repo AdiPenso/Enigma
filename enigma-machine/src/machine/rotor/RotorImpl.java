@@ -91,9 +91,20 @@ public class RotorImpl implements Rotor {
         return notchIndex == 0;
     }
 
+//    @Override
+//    public String getPosition() {
+//        return "" + this.position;
+//    }
+
     @Override
-    public String getPosition() {
-        return "" + this.position;
+    public int getPosition() {
+        return this.position;
+    }
+
+
+    @Override
+    public int getNotchIndex() {
+        return this.notchIndex;
     }
 
 
@@ -128,6 +139,16 @@ public class RotorImpl implements Rotor {
         }
     }
 
+    @Override
+    public void setPosition(int position) {
+        this.position = position;
+        this.notchIndex = Math.floorMod(notchIndex - position, size);//TODO potential bug
+    }
+
+    @Override
+    public int getId() {
+        return this.id;
+    }
 
 
 //TODO this is validation functions

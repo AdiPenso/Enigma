@@ -32,10 +32,12 @@ public class RepositoryImpl implements Repository {
         this.reflectorsById = Collections.unmodifiableMap(new HashMap<>(reflectorsById));
     }
 
+    @Override
     public String getAbc() {
         return abc;
     }
 
+    @Override
     public Map<Integer, Rotor> getRotorsById() {
         return rotorsById;
     }
@@ -44,14 +46,24 @@ public class RepositoryImpl implements Repository {
         return reflectorsById;
     }
 
+    @Override
     public Rotor getRotor(int id) {
         return rotorsById.get(id);
     }
 
+    @Override
     public Reflector getReflector(int id) {
         return reflectorsById.get(id);
     }
 
+    @Override
+    public int getAvailableRotorsCount() {
+        return rotorsById.size();
+    }
 
+    @Override
+    public int getAvailableReflectorsCount() {
+        return reflectorsById.size();
+    }
 
 }

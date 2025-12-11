@@ -74,5 +74,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="Java EE 6-Java EE 6" level="project" />
+    <orderEntry type="module" module-name="enigma-dto" />
   </component>
 </module>

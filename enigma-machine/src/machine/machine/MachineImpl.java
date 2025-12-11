@@ -61,4 +61,9 @@ public class MachineImpl implements Machine {
             rotorIndex++;
         }while(shouldAdvance && rotorIndex < rotors.size());
     }
+
+    @Override
+    public Code getCode() {
+        return this.code;
+    }
 }

@@ -10,4 +10,18 @@ public interface Repository {
                Map<Integer, Rotor> rotorsById,
                Map<Integer, Reflector> reflectorsById);
 
+
+    String getAbc();
+
+    Rotor getRotor(int rotorId);
+
+    Reflector getReflector(int reflectorIdNumeric);
+
+    Map<Integer, Rotor> getRotorsById();
+
+    Map<Integer, Reflector> getReflectorsById();
+
+    int getAvailableRotorsCount();
+
+    int getAvailableReflectorsCount();
 }

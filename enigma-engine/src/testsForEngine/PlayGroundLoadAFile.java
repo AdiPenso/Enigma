@@ -4,7 +4,7 @@ import engine.ConfigurationException;
 import engine.Engine;
 import engine.EngineImpl;
 
-public class PlayGround {
+public class PlayGroundLoadAFile {
     public static void main(String[] args) {
         final Engine engine = new EngineImpl(); // הנחה שיש מימוש של המנוע בשם EngineImpl
         String goodPath = "C:\\Users\\user\\Desktop\\LastYear\\PTML\\testingFiles\\ex1-sanity-small.xml";
