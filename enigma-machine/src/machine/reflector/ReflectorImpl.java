@@ -1,10 +1,12 @@
 package machine.reflector;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ReflectorImpl implements Reflector {
+public class ReflectorImpl implements Reflector, Serializable {
+    private static final long serialVersionUID = 1L;
     private final Map<Integer, Integer> mapping;
     int id;
 

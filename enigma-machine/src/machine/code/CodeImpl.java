@@ -2,9 +2,12 @@ package machine.code;
 
 import machine.reflector.Reflector;
 import machine.rotor.Rotor;
+
+import java.io.Serializable;
 import java.util.List;
 
-public class CodeImpl implements Code {
+public class CodeImpl implements Code, Serializable {
+    private static final long serialVersionUID = 1L;
     private final List<Rotor> rotors;
     private final Reflector reflector;
 

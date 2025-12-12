@@ -3,9 +3,12 @@ package machine.machine;
 import machine.code.Code;
 import machine.keyboard.Keyboard;
 import machine.rotor.Rotor;
+
+import java.io.Serializable;
 import java.util.List;
 
-public class MachineImpl implements Machine {
+public class MachineImpl implements Machine, Serializable {
+    private static final long serialVersionUID = 1L;
     private Code code;
     private final Keyboard keyboard;
 

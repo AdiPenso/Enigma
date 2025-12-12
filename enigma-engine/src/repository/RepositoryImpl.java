@@ -5,11 +5,13 @@ import machine.reflector.Reflector;
 import machine.rotor.Rotor;
 import machine.rotor.RotorImpl;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RepositoryImpl implements Repository {
+public class RepositoryImpl implements Repository, Serializable {
+    private static final long serialVersionUID = 1L;
     private String abc;
     private Map<Integer, Rotor> rotorsById = Collections.emptyMap();
     private Map<Integer, Reflector> reflectorsById = Collections.emptyMap();

@@ -26,6 +26,7 @@ import statistics.CodeUsageRecord;
 import statistics.StatisticsManager;
 import statistics.StatisticsManagerImpl;
 
+import java.io.*;
 import java.util.*;
 
 import static engine.Utils.intToRoman;
@@ -682,6 +683,37 @@ public class EngineImpl implements Engine {
                                  int reflectorIdNumeric) {
         applyCodeToMachine(rotorIdsRightToLeft, initialPositionsRightToLeft, reflectorIdNumeric, true);
     }
+
+    @Override
+    public void saveSystemStateToFile(String fileName) throws IOException {
+        ensureRepositoryLoaded();
+        ensureMachineLoaded();
+
+        if (statisticsManager == null) {
+            throw new ConfigurationException("Statistics are not initialized yet.");
+        }
+
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName))) {
+            out.writeObject(machine);
+            out.writeObject(statisticsManager);
+            out.writeObject(repository);
+            out.writeObject(currentAbc);
+        }
+    }
+
+    @Override
+    public void loadSystemStateFromFile(String fileName) throws IOException {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(fileName))) {
+            this.machine = (Machine) in.readObject();
+            this.statisticsManager = (StatisticsManager) in.readObject();
+            this.repository = (Repository) in.readObject();
+            this.currentAbc = (String) in.readObject();
+
+        } catch (ClassNotFoundException e) {
+            throw new IOException("Failed to load system state from file: " + e.getMessage(), e);
+        }
+    }
+
 
 
 

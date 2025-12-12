@@ -1,6 +1,9 @@
 package machine.keyboard;
 
-public class KeyboardImpl implements Keyboard {
+import java.io.Serializable;
+
+public class KeyboardImpl implements Keyboard, Serializable {
+    private static final long serialVersionUID = 1L;
     private final String alphabet;
 
     public KeyboardImpl(String alphabet) {

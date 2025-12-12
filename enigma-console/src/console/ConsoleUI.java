@@ -5,6 +5,7 @@ import dto.MachineSpecificationDTO;
 import engine.ConfigurationException;
 import engine.Engine;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -54,6 +55,12 @@ public class ConsoleUI {
                     handleHistoryAndStatistics();
                     break;
                 case "8":
+                    handleSaveState();
+                    break;
+                case "9":
+                    handleLoadState();
+                    break;
+                case "10":
                     System.out.println("Exiting. Goodbye!");
                     exit = true;
                     break;
@@ -80,8 +87,10 @@ public class ConsoleUI {
         System.out.println("5. Process input string");
         System.out.println("6. Reset current code to original");
         System.out.println("7. Show history and statistics");
-        System.out.println("8. Exit");
-        System.out.print  ("Please choose an option (1-8): ");
+        System.out.println("8. Save system state");
+        System.out.println("9. Load system state");
+        System.out.println("10. Exit");
+        System.out.print  ("Please choose an option (1-10): ");
     }
 
     private void handleLoadMachineFromFile() {
@@ -97,8 +106,6 @@ public class ConsoleUI {
         } catch (ConfigurationException e) {
             System.out.println("Failed to load machine configuration.");
             System.out.println("Reason: " + e.getMessage());
-            //System.out.println("Please correct the issue or try a different file.");
-
         } catch (Exception e) {
             System.out.println("An unexpected error occurred while loading the XML file.");
             System.out.println("Details: " + e.getMessage());
@@ -139,7 +146,6 @@ public class ConsoleUI {
         } catch (ConfigurationException e) {
             System.out.println("Cannot show machine specifications.");
             System.out.println("Reason: " + e.getMessage());
-            //System.out.println("Please load a valid XML file first (command 1).");
 
         } catch (Exception e) {
             System.out.println("An unexpected error occurred while retrieving machine specifications.");
@@ -220,7 +226,6 @@ public class ConsoleUI {
         } catch (ConfigurationException e) {
             System.out.println("Failed to set manual code configuration.");
             System.out.println("Reason: " + e.getMessage());
-            //System.out.println("Please correct the input and try again from the menu.");
 
         } catch (Exception e) {
             System.out.println("An unexpected error occurred while setting manual code configuration.");
@@ -252,7 +257,6 @@ public class ConsoleUI {
         } catch (ConfigurationException e) {
             System.out.println("Cannot set automatic code configuration.");
             System.out.println("Reason: " + e.getMessage());
-            //System.out.println("Please make sure a valid XML file is loaded first (command 1).");
 
         } catch (Exception e) {
             System.out.println("An unexpected error occurred while setting automatic code configuration.");
@@ -281,7 +285,6 @@ public class ConsoleUI {
         } catch (ConfigurationException e) {
             System.out.println("Cannot process input:");
             System.out.println("Reason: " + e.getMessage());
-            //System.out.println("Please fix the problem and try again.");
 
         } catch (Exception e) {
             System.out.println("An unexpected error occurred while processing the input.");
@@ -297,7 +300,6 @@ private void handleResetCode() {
     } catch (ConfigurationException e) {
         System.out.println("Cannot reset code configuration.");
         System.out.println("Reason: " + e.getMessage());
-        //System.out.println("Make sure a valid XML file is loaded and a code was defined using command 3 or 4.");
 
     } catch (Exception e) {
         System.out.println("An unexpected error occurred while resetting the code.");
@@ -317,12 +319,42 @@ private void handleHistoryAndStatistics() {
     } catch (ConfigurationException e) {
         System.out.println("Cannot show history and statistics.");
         System.out.println("Reason: " + e.getMessage());
-        //System.out.println("Please load a valid XML file first (command 1).");
 
     } catch (Exception e) {
         System.out.println("An unexpected error occurred while retrieving history and statistics.");
         System.out.println("Details: " + e.getMessage());
     }
 }
+
+    private void handleSaveState() {
+        System.out.println("Please enter full path including file name (without extension):");
+        String pathWithoutExt = scanner.nextLine().trim();
+        String fileName = pathWithoutExt + ".state";
+
+        try {
+            engine.saveSystemStateToFile(fileName);
+            System.out.println("System state saved successfully to: " + fileName);
+        } catch (ConfigurationException e) {
+            System.out.println("Configuration error: " + e.getMessage());
+        } catch (IOException e) {
+            System.out.println("I/O error: " + e.getMessage());
+        }
+    }
+
+    private void handleLoadState() {
+        System.out.println("Please enter full path including file name (without extension):");
+        String pathWithoutExt = scanner.nextLine().trim();
+
+        String fileName = pathWithoutExt + ".state";
+
+        try {
+            engine.loadSystemStateFromFile(fileName);
+            System.out.println("System state loaded successfully from: " + fileName);
+        } catch (IOException e) {
+            System.out.println("Error while loading system state: " + e.getMessage());
+        }
+    }
+
+
 }
 

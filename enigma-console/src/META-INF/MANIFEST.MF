@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Main-Class: Main
+Main-Class: console.Main
 Class-Path: engine-Jar.jar dto-Jar.jar machine-Jar.jar lib/angus-activat
  ion.jar lib/jakarta.activation-api.jar lib/jakarta.xml.bind-api.jar lib
  /javax.annotation.jar lib/javax.ejb.jar lib/javax.jms.jar lib/javax.per

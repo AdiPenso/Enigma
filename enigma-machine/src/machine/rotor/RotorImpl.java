@@ -1,9 +1,11 @@
 package machine.rotor;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RotorImpl implements Rotor {
+public class RotorImpl implements Rotor, Serializable {
+    private static final long serialVersionUID = 1L;
     private int position = 0;
     private final int size;
     private final int id;
@@ -68,7 +70,6 @@ public class RotorImpl implements Rotor {
 
     @Override
     public boolean advance() {
-        int previousPosition = position;
         position = (position + 1) % size;
         notchIndex = Math.floorMod(notchIndex - 1, size);
         return notchIndex == 0;

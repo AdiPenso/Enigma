@@ -1,9 +1,11 @@
 package statistics;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StatisticsManagerImpl implements StatisticsManager {
+public class StatisticsManagerImpl implements StatisticsManager, Serializable {
+    private static final long serialVersionUID = 1L;
     private final List<CodeUsageRecord> sessions = new ArrayList<>();
     private long totalMessages = 0;
 

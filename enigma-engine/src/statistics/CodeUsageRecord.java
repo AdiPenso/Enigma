@@ -1,16 +1,18 @@
 package statistics;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CodeUsageRecord {
+public class CodeUsageRecord implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final List<Integer> rotorIdsRightToLeft;
     private final String initialPositionsRightToLeft;
     private final int reflectorIdNumeric;
     private final List<Integer> notchOffsetsRightToLeft;
     private final List<String> outputMessages = new ArrayList<>();
-    private final List<String> inputMessages = new ArrayList<>();;
-    private final List<Long> durationsNano = new ArrayList<>();;
+    private final List<String> inputMessages = new ArrayList<>();
+    private final List<Long> durationsNano = new ArrayList<>();
 
     public CodeUsageRecord(List<Integer> rotorIdsRightToLeft,
                            String initialPositionsRightToLeft,

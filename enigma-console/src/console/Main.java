@@ -1,4 +1,5 @@
-import console.ConsoleUI;
+package console;
+
 import engine.Engine;
 import engine.EngineImpl;
 
