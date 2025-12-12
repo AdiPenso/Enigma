@@ -26,18 +26,12 @@ public class RepositoryImpl implements Repository {
                       Map<Integer, Reflector> reflectorsById) {
 
         this.abc = abc;
-
-        // למה לא רק final?
-        // final מגן על הרפרנס, אבל לא מונע שינוי בתוכן המפה.
-        // כאן אנחנו יוצרות עותק + עוטפות ב-unmodifiable כדי שאף אחד מבחוץ לא יהרוס את המאגר בטעות.
         this.rotorsById = Collections.unmodifiableMap(new HashMap<>(rotorsById));
         this.reflectorsById = Collections.unmodifiableMap(new HashMap<>(reflectorsById));
     }
 
     @Override
-    public String getAbc() {
-        return abc;
-    }
+    public String getAbc() { return abc;}
 
     @Override
     public Map<Integer, Rotor> getRotorsById() {
@@ -81,7 +75,6 @@ public class RepositoryImpl implements Repository {
 
         RotorImpl proto = (RotorImpl) prototype;
 
-        // בונים רוטור חדש לפי אותם פרמטרים כמו מה-XML
         return new RotorImpl(
                 proto.getAlphabet(),
                 proto.getRightSequence(),

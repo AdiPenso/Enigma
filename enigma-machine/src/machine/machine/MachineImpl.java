@@ -3,8 +3,6 @@ package machine.machine;
 import machine.code.Code;
 import machine.keyboard.Keyboard;
 import machine.rotor.Rotor;
-//import machine.rotor.RotorPosition;
-
 import java.util.List;
 
 public class MachineImpl implements Machine {
@@ -26,11 +24,8 @@ public class MachineImpl implements Machine {
         List<Rotor> rotors = code.getRotors();
 
         advance(rotors);
-
         intermediate = forward(rotors, intermediate);
-
         intermediate = code.getReflector().reflect(intermediate);
-
         intermediate = backward(rotors, intermediate);
 
         return keyboard.lightALamp(intermediate);
@@ -40,13 +35,13 @@ public class MachineImpl implements Machine {
         for (int i = rotors.size() - 1; i >= 0; i--) {
             intermediate = rotors.get(i).encodeBackward(intermediate);
         }
+
         return intermediate;
     }
 
     private int forward(List<Rotor> rotors, int intermediate) {
-        for (int i = 0; i < rotors.size(); i++) {
-           // System.out.println("Rotor " + i + " position before encoding: " + rotors.get(i).getPosition() + "intermidiate: "+ intermediate);
-            intermediate = rotors.get(i).encodeForward(intermediate);
+        for (Rotor rotor : rotors) {
+            intermediate = rotor.encodeForward(intermediate);
         }
 
         return intermediate;
@@ -54,7 +49,7 @@ public class MachineImpl implements Machine {
 
     private void advance(List<Rotor> rotors) {
         int rotorIndex = 0;
-        boolean shouldAdvance = false;
+        boolean shouldAdvance;
 
         do {
             shouldAdvance = rotors.get(rotorIndex).advance();

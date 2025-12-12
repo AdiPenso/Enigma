@@ -2,7 +2,6 @@ package repository;
 
 import machine.reflector.Reflector;
 import machine.rotor.Rotor;
-
 import java.util.Map;
 
 public interface Repository {

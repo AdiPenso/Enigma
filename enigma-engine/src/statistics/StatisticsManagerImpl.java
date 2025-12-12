@@ -24,11 +24,10 @@ public class StatisticsManagerImpl implements StatisticsManager {
     @Override
     public void recordProcessedMessage(String input, String output, long durationNano) {
         if (sessions.isEmpty()) {
-            // no code was defined yet – you can also throw a custom exception if you prefer
             throw new IllegalStateException("No code configuration was defined before processing messages.");
         }
 
-        CodeUsageRecord currentSession = sessions.get(sessions.size() - 1);
+        CodeUsageRecord currentSession = sessions.getLast();
         currentSession.addProcessedMessage(input, output, durationNano);
         totalMessages++;
     }
@@ -40,7 +39,7 @@ public class StatisticsManagerImpl implements StatisticsManager {
 
     @Override
     public List<CodeUsageRecord> getAllSessions() {
-        return sessions; // you can wrap with Collections.unmodifiableList if you want
+        return sessions;
     }
 
     @Override
@@ -49,6 +48,6 @@ public class StatisticsManagerImpl implements StatisticsManager {
             return null;
         }
 
-        return sessions.get(sessions.size() - 1);
+        return sessions.getLast();
     }
 }

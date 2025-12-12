@@ -1,7 +1,6 @@
 package machine.keyboard;
 
 public class KeyboardImpl implements Keyboard {
-
     private final String alphabet;
 
     public KeyboardImpl(String alphabet) {

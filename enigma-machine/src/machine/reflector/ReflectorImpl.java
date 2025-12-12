@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ReflectorImpl implements Reflector {
-//TODO validation tests
     private final Map<Integer, Integer> mapping;
     int id;
 
@@ -22,12 +21,11 @@ public class ReflectorImpl implements Reflector {
                     "Reflector " + id + ": no mapping found for input index " + input
             );
         }
+
         return output;
     }
 
-    //TODO remove if not needed
     public int getId() {
         return id;
     }
-
 }

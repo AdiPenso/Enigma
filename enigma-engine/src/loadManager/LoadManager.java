@@ -3,5 +3,5 @@ package loadManager;
 import generated.BTEEnigma;
 
 public interface LoadManager {
-    public BTEEnigma load(String filePath) /*throws LoadManagerException*/;
+    public BTEEnigma load(String filePath) ;
 }

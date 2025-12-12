@@ -97,7 +97,7 @@ public class ConsoleUI {
         } catch (ConfigurationException e) {
             System.out.println("Failed to load machine configuration.");
             System.out.println("Reason: " + e.getMessage());
-            System.out.println("Please correct the issue or try a different file.");
+            //System.out.println("Please correct the issue or try a different file.");
 
         } catch (Exception e) {
             System.out.println("An unexpected error occurred while loading the XML file.");
@@ -139,7 +139,7 @@ public class ConsoleUI {
         } catch (ConfigurationException e) {
             System.out.println("Cannot show machine specifications.");
             System.out.println("Reason: " + e.getMessage());
-            System.out.println("Please load a valid XML file first (command 1).");
+            //System.out.println("Please load a valid XML file first (command 1).");
 
         } catch (Exception e) {
             System.out.println("An unexpected error occurred while retrieving machine specifications.");
@@ -220,7 +220,7 @@ public class ConsoleUI {
         } catch (ConfigurationException e) {
             System.out.println("Failed to set manual code configuration.");
             System.out.println("Reason: " + e.getMessage());
-            System.out.println("Please correct the input and try again from the menu.");
+            //System.out.println("Please correct the input and try again from the menu.");
 
         } catch (Exception e) {
             System.out.println("An unexpected error occurred while setting manual code configuration.");
@@ -252,7 +252,7 @@ public class ConsoleUI {
         } catch (ConfigurationException e) {
             System.out.println("Cannot set automatic code configuration.");
             System.out.println("Reason: " + e.getMessage());
-            System.out.println("Please make sure a valid XML file is loaded first (command 1).");
+            //System.out.println("Please make sure a valid XML file is loaded first (command 1).");
 
         } catch (Exception e) {
             System.out.println("An unexpected error occurred while setting automatic code configuration.");
@@ -281,7 +281,7 @@ public class ConsoleUI {
         } catch (ConfigurationException e) {
             System.out.println("Cannot process input:");
             System.out.println("Reason: " + e.getMessage());
-            System.out.println("Please fix the problem and try again.");
+            //System.out.println("Please fix the problem and try again.");
 
         } catch (Exception e) {
             System.out.println("An unexpected error occurred while processing the input.");
@@ -297,7 +297,7 @@ private void handleResetCode() {
     } catch (ConfigurationException e) {
         System.out.println("Cannot reset code configuration.");
         System.out.println("Reason: " + e.getMessage());
-        System.out.println("Make sure a valid XML file is loaded and a code was defined using command 3 or 4.");
+        //System.out.println("Make sure a valid XML file is loaded and a code was defined using command 3 or 4.");
 
     } catch (Exception e) {
         System.out.println("An unexpected error occurred while resetting the code.");
@@ -317,7 +317,7 @@ private void handleHistoryAndStatistics() {
     } catch (ConfigurationException e) {
         System.out.println("Cannot show history and statistics.");
         System.out.println("Reason: " + e.getMessage());
-        System.out.println("Please load a valid XML file first (command 1).");
+        //System.out.println("Please load a valid XML file first (command 1).");
 
     } catch (Exception e) {
         System.out.println("An unexpected error occurred while retrieving history and statistics.");

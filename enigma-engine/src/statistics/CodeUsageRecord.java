@@ -1,12 +1,9 @@
 package statistics;
 
-import machine.code.Code;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class CodeUsageRecord {
-
     private final List<Integer> rotorIdsRightToLeft;
     private final String initialPositionsRightToLeft;
     private final int reflectorIdNumeric;
@@ -15,12 +12,10 @@ public class CodeUsageRecord {
     private final List<String> inputMessages = new ArrayList<>();;
     private final List<Long> durationsNano = new ArrayList<>();;
 
-
     public CodeUsageRecord(List<Integer> rotorIdsRightToLeft,
                            String initialPositionsRightToLeft,
                            List<Integer> notchOffsetsRightToLeft,
                            int reflectorIdNumeric) {
-        // make a defensive copy so no external modification can affect us
         this.rotorIdsRightToLeft = new ArrayList<>(rotorIdsRightToLeft);
         this.initialPositionsRightToLeft = initialPositionsRightToLeft;
         this.notchOffsetsRightToLeft = new ArrayList<>(notchOffsetsRightToLeft);

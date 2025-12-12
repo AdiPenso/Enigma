@@ -15,9 +15,6 @@ import machine.code.CodeImpl;
 import machine.keyboard.KeyboardImpl;
 import machine.machine.Machine;
 
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Unmarshaller;
 import machine.machine.MachineImpl;
 import machine.reflector.Reflector;
 import machine.reflector.ReflectorImpl;
@@ -29,7 +26,6 @@ import statistics.CodeUsageRecord;
 import statistics.StatisticsManager;
 import statistics.StatisticsManagerImpl;
 
-import java.io.File;
 import java.util.*;
 
 import static engine.Utils.intToRoman;
@@ -366,7 +362,7 @@ public class EngineImpl implements Engine {
 
         for (BTEReflector reflectorDto : dto.getBTEReflectors().getBTEReflector()) {
             int numericId = romanToInt(reflectorDto.getId());
-            Map<Integer, Integer> mapping = buildReflectorMapping(reflectorDto, abc.length());
+            Map<Integer, Integer> mapping = buildReflectorMapping(reflectorDto);
             Reflector reflector = new ReflectorImpl(numericId, mapping);
 
             reflectorsById.put(numericId, reflector);
@@ -399,7 +395,7 @@ public class EngineImpl implements Engine {
         return sb.toString();
     }
 
-    private Map<Integer, Integer> buildReflectorMapping(BTEReflector reflectorDto, int abcLength) {
+    private Map<Integer, Integer> buildReflectorMapping(BTEReflector reflectorDto) {
         Map<Integer, Integer> mapping = new HashMap<>();
 
         for (BTEReflect reflect : reflectorDto.getBTEReflect()) {
@@ -648,7 +644,6 @@ public class EngineImpl implements Engine {
                                     int reflectorIdNumeric,
                                     boolean recordStatistics) {
 
-        String abc = repository.getAbc();
         int rotorsCount = rotorIdsRightToLeft.size();
 
         List<Rotor> rotors = new ArrayList<>(rotorsCount);

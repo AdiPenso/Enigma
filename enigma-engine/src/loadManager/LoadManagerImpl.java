@@ -13,24 +13,17 @@ public class LoadManagerImpl implements LoadManager {
     public BTEEnigma load(String filePath) /*throws LoadManagerException*/ {
         basicFileChecks(filePath);
 
-        BTEEnigma dto = parseXml(filePath);
-
-        return dto;
+        return parseXml(filePath);
     }
 
     private BTEEnigma parseXml(String filePath) {
         try {
-            // JAXBContext is a factory that "knows" how to map between XML and Java classes
             JAXBContext context = JAXBContext.newInstance(BTEEnigma.class);
-
-            // Unmarshaller is the component that performs XML -> Java conversion
             Unmarshaller unmarshaller = context.createUnmarshaller();
 
-            // unmarshal(...) reads the XML file and creates a full object graph in memory
             return (BTEEnigma) unmarshaller.unmarshal(new File(filePath));
 
         } catch (JAXBException e) {
-            // schema-wise problem, or XML not matching the XSD
             throw new ConfigurationException(
                     "Failed to parse XML file '" + filePath + "': " + e.getMessage(), e);
         }
