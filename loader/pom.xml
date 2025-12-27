@@ -18,9 +18,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <!-- IMPORTANT: this is the package engine will import -->
         <jaxb.package>patmal.course.enigma.loader.schema</jaxb.package>
-        <!-- XSD location -->
         <jaxb.xsd>src/main/resources/xsd/Enigma-Ex2.xsd</jaxb.xsd>
     </properties>
 

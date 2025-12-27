@@ -23,16 +23,9 @@
 
         <dependency>
             <groupId>patmal.course.enigma</groupId>
-            <artifactId>loader</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>patmal.course.enigma</groupId>
             <artifactId>dto</artifactId>
             <version>${project.version}</version>
         </dependency>
-
     </dependencies>
 
 </project>
