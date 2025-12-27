@@ -26,6 +26,7 @@ import patmal.course.enigma.engineManager.statistics.StatisticsManager;
 import patmal.course.enigma.engineManager.statistics.StatisticsManagerImpl;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.util.*;
 
 import static patmal.course.enigma.engineManager.engine.Utils.intToRoman;
@@ -33,7 +34,7 @@ import static patmal.course.enigma.engineManager.engine.Utils.romanToInt;
 
 public class EngineImpl implements Engine {
 
-    private static final int requiredRotorsCount = 3;
+    private int requiredRotorsCount; //זה היה שדה סטטי פיינל ששינינו אז אולי יהיו בעיות אם קראו לזה ממקומות אחרים
     private Machine machine;
     private String currentAbc;
     private final LoadManager loadManager;
@@ -177,9 +178,24 @@ public class EngineImpl implements Engine {
     private void validateConfiguration(BTEEnigma dto) {
         String abc = extractAndValidateAbc(dto);
         this.currentAbc = abc;
+        this.requiredRotorsCount = extractAndValidateNumberOfRotors(dto);
 
         validateRotors(dto.getBTERotors().getBTERotor(), abc);
         validateReflectors(dto.getBTEReflectors().getBTEReflector(), abc);
+    }
+
+    private int extractAndValidateNumberOfRotors(BTEEnigma dto) {
+        BigInteger rc = dto.getRotorsCount();
+        if (rc == null) {
+            throw new ConfigurationException("Missing rotors-count");
+        }
+        int rotorsCount = rc.intValueExact();
+
+        if (rotorsCount <= 0) {
+            throw new ConfigurationException("RequiredRotors must be at least 1. Found: " + rotorsCount);
+        }
+
+        return rotorsCount;
     }
 
     private String extractAndValidateAbc(BTEEnigma dto) {
@@ -215,7 +231,7 @@ public class EngineImpl implements Engine {
         }
 
         if (rotors.size() < requiredRotorsCount) {
-            throw new ConfigurationException("Configuration must define at least 3 rotors. Found: " + rotors.size());
+            throw new ConfigurationException("Configuration must define " +requiredRotorsCount+ " rotors, but only " + rotors.size() + " were found.");
         }
 
         Set<Integer> ids = new HashSet<>();
