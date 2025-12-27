@@ -227,7 +227,8 @@ public class EngineImpl implements Engine {
 
     private void validateRotors(List<BTERotor> rotors, String abc) {
         if (rotors == null || rotors.isEmpty()) {
-            throw new ConfigurationException("Configuration must define at least 3 rotors, but none were found.");
+            throw new ConfigurationException("Configuration must define "+requiredRotorsCount+ "rotors, but none were found.");
+
         }
 
         if (rotors.size() < requiredRotorsCount) {
@@ -593,7 +594,7 @@ public class EngineImpl implements Engine {
         ensureRepositoryLoaded();
 
         if (rotorIdsLeftToRight == null || rotorIdsLeftToRight.isEmpty()) {
-            throw new ConfigurationException("You must choose at least one rotor.");
+            throw new ConfigurationException("You must choose "+requiredRotorsCount+" rotors.");
         }
 
         if (rotorIdsLeftToRight.size() != requiredRotorsCount) {
